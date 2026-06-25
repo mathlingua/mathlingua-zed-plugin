@@ -1,15 +1,29 @@
 # Mathlingua for Zed
 
-Syntax highlighting for [Mathlingua](https://github.com/dominickramer/mathlingua) (`.mlg`) files.
+Syntax highlighting and inline diagnostics for
+[Mathlingua](https://github.com/dominickramer/mathlingua) (`.mlg`) files.
+
+Diagnostics come from `mlg lsp` — a tiny LSP server built into the `mlg`
+binary. On every save, it re-runs `mlg check` for the project containing the
+saved file and publishes errors/warnings to Zed.
 
 ## Install as a dev extension
 
-1. Open Zed.
-2. Open the command palette and run **zed: install dev extension**.
-3. Select this directory (`zed-plugin/`).
+1. Build `mlg` (the binary must be on your `PATH`):
 
-Zed will compile the bundled tree-sitter grammar in `grammars/mathlingua/` and
-load the language config from `languages/mathlingua/`.
+   ```sh
+   cd /Users/kramer/Developer/mathlingua/mathlingua
+   cargo install --path .
+   ```
+
+   (Or symlink `target/release/mlg` somewhere on `PATH`.)
+
+2. Open Zed, run **zed: install dev extension**, and select this directory
+   (`zed-plugin/`).
+
+Zed compiles the bundled tree-sitter grammar in `../tree-sitter-mathlingua/`,
+the Rust → WASM extension shim that launches the LSP, and loads the language
+config from `languages/mathlingua/`.
 
 ## Layout
 

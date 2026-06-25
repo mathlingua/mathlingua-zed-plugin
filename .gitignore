@@ -1,3 +1,5 @@
 .DS_Store
 .claude/
 grammars/
+target/
+Cargo.lock
