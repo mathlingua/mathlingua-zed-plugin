@@ -45,13 +45,43 @@ module.exports = grammar({
       repeat(seq(':', /[a-zA-Z_][a-zA-Z0-9_]*/)),
     ))),
 
-    // \name(.name)*(:label)*  e.g. \set, \closed.set, \function:on:to, \foo.$bar.baz
-    command: $ => token(prec(2, seq(
+    // \name(.name)* head, followed by zero or more :label or :?label suffixes
+    // and optional immediate {…} / (…) argument blocks. Split into sub-nodes so
+    // the ":" / ":?" marker can be highlighted separately from the label name.
+    command: $ => prec.right(seq(
+      $.command_head,
+      repeat(choice(
+        $.command_label,
+        $.command_brace_args,
+        $.command_paren_args,
+      )),
+    )),
+
+    command_head: $ => token(prec(2, seq(
       '\\',
       /[a-zA-Z_$][a-zA-Z0-9_$]*/,
       repeat(seq('.', /[a-zA-Z_$][a-zA-Z0-9_$]*/)),
-      repeat(seq(':', /[a-zA-Z_$][a-zA-Z0-9_$]*/)),
     ))),
+
+    command_label: $ => seq(
+      $.command_label_marker,
+      $.command_label_name,
+    ),
+
+    command_label_marker: $ => token.immediate(prec(2, choice(':?', ':'))),
+    command_label_name: $ => token.immediate(/[a-zA-Z_$][a-zA-Z0-9_$]*/),
+
+    command_brace_args: $ => prec(2, seq(
+      token.immediate('{'),
+      repeat($._token),
+      '}',
+    )),
+
+    command_paren_args: $ => prec(2, seq(
+      token.immediate('('),
+      repeat($._token),
+      ')',
+    )),
 
     // $name or $`op`  alias reference (with optional dotted chain)
     alias_ref: $ => token(prec(2, /\$([a-zA-Z_][a-zA-Z0-9_]*|`[^`\n]+`)(\.([a-zA-Z_][a-zA-Z0-9_]*|`[^`\n]+`))*/)),
