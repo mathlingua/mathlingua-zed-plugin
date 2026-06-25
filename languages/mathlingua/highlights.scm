@@ -7,8 +7,12 @@
 ; List bullet ". " at the start of a clause / item.
 (bullet) @punctuation.list_marker
 
-; \name, \name.path, \name:label  -> commands invoke definitions
-(command) @function
+; \name, \name.path  -> command head, plus same color on label names like `on` in :?on
+(command_head) @function
+(command_label_name) @function
+
+; The ":" or ":?" between a command and its label name renders as plain punctuation.
+(command_label_marker) @punctuation
 
 ; \\type, \\statement, \\forAll:suchThat -> special "type" commands
 (type_command) @type
