@@ -79,7 +79,7 @@ module.exports = grammar({
       )),
     ))),
 
-    command_close: $ => token.immediate(prec(3, choice(':/', './', '?:/', '?./'))),
+    command_close: $ => token.immediate(prec(3, choice(':/', './', '?:/'))),
 
     command_label: $ => seq(
       $.command_label_marker,

@@ -1330,7 +1330,6 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       END_STATE();
     case 121:
       ACCEPT_TOKEN(anon_sym_QMARK);
-      if (lookahead == '.') ADVANCE(2);
       if (lookahead == ':') ADVANCE(2);
       END_STATE();
     case 122:
