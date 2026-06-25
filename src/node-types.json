@@ -12,6 +12,10 @@
           "named": true
         },
         {
+          "type": "command_close",
+          "named": true
+        },
+        {
           "type": "command_head",
           "named": true
         },
@@ -317,6 +321,10 @@
   },
   {
     "type": "bullet",
+    "named": true
+  },
+  {
+    "type": "command_close",
     "named": true
   },
   {

@@ -45,9 +45,11 @@ module.exports = grammar({
       repeat(seq(':', /[a-zA-Z_][a-zA-Z0-9_]*/)),
     ))),
 
-    // \name(.name)* head, followed by zero or more :label or :?label suffixes
-    // and optional immediate {…} / (…) argument blocks. Split into sub-nodes so
-    // the ":" / ":?" marker can be highlighted separately from the label name.
+    // \name(.name)* head (also handles infix forms like \.set.=./ and
+    // \:map.$alias.=={A}:to{B}:/), followed by zero or more :label or :?label
+    // suffixes and optional immediate {…} / (…) argument blocks, with an
+    // optional ./ or :/ closer. Split into sub-nodes so the ":" / ":?" marker
+    // can be highlighted separately from the label name.
     command: $ => prec.right(seq(
       $.command_head,
       repeat(choice(
@@ -55,13 +57,29 @@ module.exports = grammar({
         $.command_brace_args,
         $.command_paren_args,
       )),
+      optional($.command_close),
     )),
 
+    // Name segments may be identifiers (incl. $alias) or operator runs (==, +,
+    // *, etc.). "/" is deliberately NOT in the operator class so that the
+    // ./ and :/ closers stay parseable.
     command_head: $ => token(prec(2, seq(
       '\\',
-      /[a-zA-Z_$][a-zA-Z0-9_$]*/,
-      repeat(seq('.', /[a-zA-Z_$][a-zA-Z0-9_$]*/)),
+      optional(choice('.', ':')),
+      choice(
+        /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+        /[!%^&*+\-=|<>~]+/,
+      ),
+      repeat(seq(
+        '.',
+        choice(
+          /[a-zA-Z_$][a-zA-Z0-9_$]*/,
+          /[!%^&*+\-=|<>~]+/,
+        ),
+      )),
     ))),
+
+    command_close: $ => token.immediate(prec(3, choice(':/', './'))),
 
     command_label: $ => seq(
       $.command_label_marker,
