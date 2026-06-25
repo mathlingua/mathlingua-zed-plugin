@@ -9,11 +9,16 @@
 (bullet) @punctuation.list_marker
 
 ; \name, \name.path  -> command head; and label names like `on` in :?on.
+; Infix command forms like \.set.=./ and \:map.$alias.=={…}:/ get the same
+; styling so the operator name reads consistently with prefix commands.
 (command_head) @function.builtin
 (command_label_name) @function.builtin
 
 ; The ":" or ":?" between a command and its label name renders as plain punctuation.
 (command_label_marker) @punctuation
+
+; The ./ or :/ closer on infix commands shares the command styling.
+(command_close) @function.builtin
 
 ; \\type, \\statement, \\forAll:suchThat -> special "type" commands
 (type_command) @type
