@@ -106,12 +106,14 @@ module.exports = grammar({
       '->',
     ))),
 
-    // is / is_not (with optional trailing ?)
+    // in-expression keywords: is / is_not / via / member_of (with optional trailing ?)
     is_op: $ => token(prec(2, choice(
       'is_not?',
       'is_not',
       'is?',
       'is',
+      'via',
+      'member_of',
     ))),
 
     // Header keyword followed by a colon, e.g. Describes:, when:, forAll:

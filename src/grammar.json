@@ -450,6 +450,14 @@
             {
               "type": "STRING",
               "value": "is"
+            },
+            {
+              "type": "STRING",
+              "value": "via"
+            },
+            {
+              "type": "STRING",
+              "value": "member_of"
             }
           ]
         }
