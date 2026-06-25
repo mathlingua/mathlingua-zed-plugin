@@ -1,15 +1,16 @@
 ; Section / sub-section headers like "Describes:", "when:", "forAll:".
 (header) @keyword
 
-; "is", "is_not", "is?", "is_not?"
-(is_op) @keyword.operator
+; "is", "is_not", "is?", "is_not?", "via", "member_of"  -> in-expression keywords,
+; intentionally a different colour from @keyword section headers (Describes:, etc.).
+(is_op) @operator
 
 ; List bullet ". " at the start of a clause / item.
 (bullet) @punctuation.list_marker
 
-; \name, \name.path  -> command head, plus same color on label names like `on` in :?on
-(command_head) @function
-(command_label_name) @function
+; \name, \name.path  -> command head; and label names like `on` in :?on.
+(command_head) @function.builtin
+(command_label_name) @function.builtin
 
 ; The ":" or ":?" between a command and its label name renders as plain punctuation.
 (command_label_marker) @punctuation
