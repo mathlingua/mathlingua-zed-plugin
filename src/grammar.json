@@ -1,5 +1,4 @@
 {
-  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "mathlingua",
   "rules": {
     "source_file": {
@@ -191,8 +190,17 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "SYMBOL",
-            "name": "command_head"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "command_head"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "refined_command_head"
+              }
+            ]
           },
           {
             "type": "REPEAT",
@@ -227,6 +235,76 @@
             ]
           }
         ]
+      }
+    },
+    "refined_command_head": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "refined_open"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "command_name"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "command_name"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "refined_separator"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "command_name"
+        }
+      ]
+    },
+    "refined_open": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "STRING",
+          "value": "\\("
+        }
+      }
+    },
+    "refined_separator": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "STRING",
+          "value": "::"
+        }
+      }
+    },
+    "command_name": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[a-zA-Z_$][a-zA-Z0-9_$]*(\\.[a-zA-Z_$][a-zA-Z0-9_$]*)*"
       }
     },
     "command_head": {
@@ -642,6 +720,5 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": [],
-  "reserved": {}
+  "supertypes": []
 }

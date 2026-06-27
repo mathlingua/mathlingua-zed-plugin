@@ -26,6 +26,10 @@
         {
           "type": "command_paren_args",
           "named": true
+        },
+        {
+          "type": "refined_command_head",
+          "named": true
         }
       ]
     }
@@ -192,9 +196,31 @@
     }
   },
   {
+    "type": "refined_command_head",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "command_name",
+          "named": true
+        },
+        {
+          "type": "refined_open",
+          "named": true
+        },
+        {
+          "type": "refined_separator",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "source_file",
     "named": true,
-    "root": true,
     "fields": {},
     "children": {
       "multiple": true,
@@ -340,6 +366,10 @@
     "named": true
   },
   {
+    "type": "command_name",
+    "named": true
+  },
+  {
     "type": "header",
     "named": true
   },
@@ -369,6 +399,14 @@
   },
   {
     "type": "placeholder",
+    "named": true
+  },
+  {
+    "type": "refined_open",
+    "named": true
+  },
+  {
+    "type": "refined_separator",
     "named": true
   },
   {

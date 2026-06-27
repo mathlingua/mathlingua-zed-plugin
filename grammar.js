@@ -51,7 +51,7 @@ module.exports = grammar({
     // optional ./ or :/ closer. Split into sub-nodes so the ":" / ":?" marker
     // can be highlighted separately from the label name.
     command: $ => prec.right(seq(
-      $.command_head,
+      choice($.command_head, $.refined_command_head),
       repeat(choice(
         $.command_label,
         $.command_brace_args,
@@ -59,6 +59,32 @@ module.exports = grammar({
       )),
       optional($.command_close),
     )),
+
+    // Refined command header: \(part, …)::target  e.g.
+    //   \(injective)::function
+    //   \(continuous, bounded)::function:on{A}:to{B}
+    // The "\(" opener, each part name and the target name read as command
+    // names; the "::" separator is plain punctuation. The colon-tail
+    // (:on{A}:to{B}) reuses the ordinary command_label / *_args machinery.
+    // The rarely-used dotted-prefix form \a.b.(…)::… is not specially
+    // highlighted (its prefix tokenises as an ordinary command head).
+    refined_command_head: $ => seq(
+      $.refined_open,
+      $.command_name,
+      repeat(seq(',', $.command_name)),
+      ')',
+      $.refined_separator,
+      $.command_name,
+    ),
+
+    // "\(" opener for a refined command header.
+    refined_open: $ => token(prec(3, '\\(')),
+
+    // "::" separator between the part list and the refined target.
+    refined_separator: $ => token.immediate(prec(3, '::')),
+
+    // A part name or the refined target name (optionally dotted).
+    command_name: $ => token(/[a-zA-Z_$][a-zA-Z0-9_$]*(\.[a-zA-Z_$][a-zA-Z0-9_$]*)*/),
 
     // Name segments may be identifiers (incl. $alias) or operator runs (==, +,
     // *, etc.). "/" is deliberately NOT in the operator class so that the
