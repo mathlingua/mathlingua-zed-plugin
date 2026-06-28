@@ -1,18 +1,18 @@
 module.exports = grammar({
   name: 'mathlingua',
 
+  // `comment` is produced by the external scanner (src/scanner.c): a line is a
+  // comment only when "--" is the first non-whitespace on the line. A "--" in
+  // the middle of a line (e.g. `[x_ -- y_]`) is NOT a comment, which a plain
+  // token regex cannot express because it has no start-of-line anchor.
+  externals: $ => [$.comment],
+
   extras: $ => [/[ \t\r]+/, $.comment],
 
   rules: {
     source_file: $ => repeat(choice($._token, $._newline)),
 
     _newline: $ => token(/\n/),
-
-    // A line that starts with "--" is a comment (leading whitespace is allowed
-    // because it is consumed as `extras` before the comment token begins). The
-    // token runs to the end of the line. "--" never appears mid-expression, so
-    // treating it as `extras` matches the language's line-comment semantics.
-    comment: $ => token(prec(3, /--[^\r\n]*/)),
 
     _token: $ => choice(
       $.bullet,

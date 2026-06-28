@@ -24,17 +24,6 @@
         "value": "\\n"
       }
     },
-    "comment": {
-      "type": "TOKEN",
-      "content": {
-        "type": "PREC",
-        "value": 3,
-        "content": {
-          "type": "PATTERN",
-          "value": "--[^\\r\\n]*"
-        }
-      }
-    },
     "_token": {
       "type": "CHOICE",
       "members": [
@@ -733,7 +722,12 @@
   ],
   "conflicts": [],
   "precedences": [],
-  "externals": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "comment"
+    }
+  ],
   "inline": [],
   "supertypes": []
 }
