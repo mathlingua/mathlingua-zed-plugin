@@ -1,3 +1,6 @@
+; Lines starting with "--" are comments.
+(comment) @comment
+
 ; Section / sub-section headers like "Describes:", "when:", "forAll:".
 (header) @keyword
 
@@ -16,6 +19,13 @@
 
 ; The ":" or ":?" between a command and its label name renders as plain punctuation.
 (command_label_marker) @punctuation
+
+; Refined command header: \(injective)::function, \(continuous, bounded)::function.
+; The "\(" opener and every part / target name read like a command name; the
+; "::" separator is plain punctuation.
+(refined_open) @function.builtin
+(command_name) @function.builtin
+(refined_separator) @punctuation
 
 ; The ./ or :/ closer on infix commands shares the command styling.
 (command_close) @function.builtin
