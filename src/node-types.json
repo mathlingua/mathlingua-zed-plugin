@@ -370,6 +370,10 @@
     "named": true
   },
   {
+    "type": "comment",
+    "named": true
+  },
+  {
     "type": "header",
     "named": true
   },

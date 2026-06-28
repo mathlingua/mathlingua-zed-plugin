@@ -24,6 +24,17 @@
         "value": "\\n"
       }
     },
+    "comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "PATTERN",
+          "value": "--[^\\r\\n]*"
+        }
+      }
+    },
     "_token": {
       "type": "CHOICE",
       "members": [
@@ -714,6 +725,10 @@
     {
       "type": "PATTERN",
       "value": "[ \\t\\r]+"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "comment"
     }
   ],
   "conflicts": [],

@@ -1,12 +1,18 @@
 module.exports = grammar({
   name: 'mathlingua',
 
-  extras: $ => [/[ \t\r]+/],
+  extras: $ => [/[ \t\r]+/, $.comment],
 
   rules: {
     source_file: $ => repeat(choice($._token, $._newline)),
 
     _newline: $ => token(/\n/),
+
+    // A line that starts with "--" is a comment (leading whitespace is allowed
+    // because it is consumed as `extras` before the comment token begins). The
+    // token runs to the end of the line. "--" never appears mid-expression, so
+    // treating it as `extras` matches the language's line-comment semantics.
+    comment: $ => token(prec(3, /--[^\r\n]*/)),
 
     _token: $ => choice(
       $.bullet,
