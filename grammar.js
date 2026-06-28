@@ -35,9 +35,11 @@ module.exports = grammar({
 
     bullet: $ => token(prec(3, /\.[ \t]/)),
 
+    // A "…" string may span multiple lines, so newlines are allowed between the
+    // quotes (the inner class excludes only `"` and `\`, not `\n`).
     string: $ => token(seq(
       '"',
-      repeat(choice(/[^"\\\n]/, /\\./)),
+      repeat(choice(/[^"\\]/, /\\./)),
       '"',
     )),
 
