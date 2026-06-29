@@ -8,7 +8,7 @@ repository = "https://github.com/dominickramer/mathlingua"
 
 [grammars.mathlingua]
 repository = "file:///Users/kramer/mathlingua-testbed/tree-sitter-mathlingua"
-commit = "6a4844dc4930ba470b9eb09f69133edab253cc76"
+commit = "f4085b4f2c33d89e3c9ea06986437aaca8d05282"
 
 [language_servers.mlg]
 name = "Mathlingua"
