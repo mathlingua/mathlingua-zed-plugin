@@ -50,49 +50,49 @@ hover is how this information is surfaced.
 1. Build `mlg` (the binary must be on your `PATH`):
 
    ```sh
-   cd /Users/kramer/Developer/mathlingua/mathlingua
+    cd /path/to/mathlingua
    cargo install --path .
    ```
 
    (Or symlink `target/release/mlg` somewhere on `PATH`.)
 
 2. Open Zed, run **zed: install dev extension**, and select this directory
-   (`zed-plugin/`).
+   (the cloned `mathlingua-zed-plugin/` directory).
 
-Zed compiles the bundled tree-sitter grammar in `../tree-sitter-mathlingua/`,
-the Rust → WASM extension shim that launches the LSP, and loads the language
-config from `languages/mathlingua/`.
+   Zed clones the pinned tree-sitter grammar, compiles the Rust to WASM
+   extension shim that launches the LSP, and loads the language config from
+   `languages/mathlingua/`.
 
 ## Layout
 
 ```
-zed-plugin/                            this extension
+mathlingua-zed-plugin/                 this extension
   extension.toml
   languages/mathlingua/
     config.toml                        file types, brackets, indent
     highlights.scm                     tree-sitter highlight queries
 
-../tree-sitter-mathlingua/             grammar (separate git repo)
+grammar branch of this repository       grammar source
   grammar.js
-  src/parser.c                         generated parser (committed)
-  package.json
+  src/parser.c                          generated parser
 ```
 
-Zed requires every grammar to be a git repo pinned by commit. The grammar lives
-in a sibling directory at `../tree-sitter-mathlingua/`, referenced by `file://`
-URL in `extension.toml`. On install Zed clones that repo into
-`zed-plugin/grammars/mathlingua/`.
+Zed requires every grammar to be a Git repository pinned by commit. The
+grammar is stored on this repository's `grammar` branch and referenced by its
+public HTTPS URL in `extension.toml`, so no local paths or additional clones
+are required. On install Zed clones it into
+`mathlingua-zed-plugin/grammars/mathlingua/`.
 
 ## Regenerating the parser
 
-After editing `grammar.js`:
+To update the grammar branch after editing `grammar.js`:
 
 ```sh
-cd ../tree-sitter-mathlingua
 npx tree-sitter generate
 git add -A && git commit -m "regen"
-git rev-parse HEAD
+git push origin HEAD:grammar
 ```
 
-Paste the hash into the `commit = "…"` line of `extension.toml`, delete
-`zed-plugin/grammars/` if it exists, then rerun **zed: install dev extension**.
+Paste the new commit hash into the `commit = "…"` line of `extension.toml`,
+delete `mathlingua-zed-plugin/grammars/` if it exists, then rerun **zed: install
+dev extension**.

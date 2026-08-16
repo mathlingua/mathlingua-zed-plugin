@@ -7,7 +7,7 @@ authors = ["Dominic Kramer <dominickramer@gmail.com>"]
 repository = "https://github.com/dominickramer/mathlingua"
 
 [grammars.mathlingua]
-repository = "file:///Users/kramer/mathlingua-testbed/tree-sitter-mathlingua"
+repository = "https://github.com/mathlingua/mathlingua-zed-plugin.git"
 commit = "f4085b4f2c33d89e3c9ea06986437aaca8d05282"
 
 [language_servers.mlg]
