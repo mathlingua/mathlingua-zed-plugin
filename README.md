@@ -5,7 +5,8 @@ Syntax highlighting, inline diagnostics, and per-line type information for
 
 Everything comes from `mlg lsp` — a tiny LSP server built into the `mlg`
 binary. On every save, it re-runs `mlg check` for the project containing the
-saved file and publishes errors/warnings to Zed.
+saved file and publishes errors/warnings to Zed. While that check is running,
+Zed displays a **Mathlingua: checking types** progress indicator.
 
 ## Type information
 
