@@ -7,7 +7,7 @@ module.exports = grammar({
   // token regex cannot express because it has no start-of-line anchor.
   externals: $ => [$.comment],
 
-  extras: $ => [/[ \t\r]+/, $.comment],
+  extras: $ => [/[ \t\r]+/],
 
   rules: {
     source_file: $ => repeat(choice($._token, $._newline)),
@@ -15,6 +15,7 @@ module.exports = grammar({
     _newline: $ => token(/\n/),
 
     _token: $ => choice(
+      $.comment,
       $.bullet,
       $.string,
       $.backtick_op,
@@ -22,6 +23,7 @@ module.exports = grammar({
       $.command,
       $.alias_ref,
       $.person_ref,
+      $.symbol_reference,
       $.magnetic_placeholder,
       $.placeholder,
       $.assign_op,
@@ -35,13 +37,174 @@ module.exports = grammar({
 
     bullet: $ => token(prec(3, /\.[ \t]/)),
 
-    // A "…" string may span multiple lines, so newlines are allowed between the
-    // quotes (the inner class excludes only `"` and `\`, not `\n`).
-    string: $ => token(seq(
-      '"',
-      repeat(choice(/[^"\\]/, /\\./)),
-      '"',
+    string: $ => choice(
+      $.single_quote_string,
+      $.triple_quote_string,
+    ),
+
+    single_quote_string: $ => seq(
+      alias('"', $.string_delimiter),
+      repeat(choice(
+        $.escape_sequence,
+        $.code_fence,
+        $.mathlingua_display_fragment,
+        $.mathlingua_inline_fragment,
+        $.latex_display_math,
+        $.latex_inline_math,
+        $.latex_command,
+        $.symbol_reference,
+        $.variadic_template,
+        $.backtick_op,
+        $._string_text,
+      )),
+      alias('"', $.string_delimiter),
+    ),
+
+    triple_quote_string: $ => seq(
+      alias(prec(3, '"""'), $.string_delimiter),
+      repeat(choice(
+        $.escape_sequence,
+        $.code_fence,
+        $.mathlingua_display_fragment,
+        $.mathlingua_inline_fragment,
+        $.latex_display_math,
+        $.latex_inline_math,
+        $.latex_command,
+        $.symbol_reference,
+        $.variadic_template,
+        $.backtick_op,
+        $._triple_string_text,
+      )),
+      alias(prec(3, '"""'), $.string_delimiter),
+    ),
+
+    code_fence: $ => token(prec(5, seq(
+      '```',
+      repeat(choice(
+        /[^`\\]+/,
+        /\\./,
+        /`[^`]/,
+        /``[^`]/,
+      )),
+      '```',
+    ))),
+
+    variadic_template: $ => token(prec(4, /\{(\{[^}]*\}|[^}\n\r])*\.\.\.(\{[^}]*\}|[^}\n\r])*\}/)),
+
+    escape_sequence: $ => token(prec(3, '\\"')),
+
+    mathlingua_display_fragment: $ => prec(2, seq(
+      alias(prec(3, '{{.'), $.mathlingua_fragment_open),
+      repeat(choice($._token, $._newline)),
+      alias(prec(3, '.}}'), $.mathlingua_fragment_close),
+      optional($.relation_modifier),
     )),
+
+    mathlingua_inline_fragment: $ => prec(1, seq(
+      alias(prec(2, '{.'), $.mathlingua_fragment_open),
+      repeat(choice($._token, $._newline)),
+      alias(prec(2, '.}'), $.mathlingua_fragment_close),
+      optional($.relation_modifier),
+    )),
+
+    relation_modifier: $ => seq(
+      '[',
+      repeat(choice(
+        $.string,
+        $.escaped_string,
+        $.operator,
+        $.identifier,
+        '=',
+      )),
+      ']',
+    ),
+
+    escaped_string: $ => seq(
+      alias('\\"', $.string_delimiter),
+      repeat(/[^"\\\n\r]+/),
+      alias('\\"', $.string_delimiter),
+    ),
+
+    latex_display_math: $ => prec(4, seq(
+      alias(prec(4, '$$'), $.latex_math_delimiter),
+      repeat($._latex_item),
+      alias(prec(4, '$$'), $.latex_math_delimiter),
+    )),
+
+    latex_inline_math: $ => prec(3, seq(
+      alias(prec(3, '$'), $.latex_math_delimiter),
+      repeat($._latex_item),
+      alias(prec(3, '$'), $.latex_math_delimiter),
+    )),
+
+    _latex_item: $ => choice(
+      $.latex_command,
+      $.latex_group,
+      $.latex_prime,
+      $.latex_superscript,
+      $.latex_subscript,
+      $.symbol_reference,
+      $.number,
+      $.operator,
+      $.identifier,
+      $._latex_punct,
+      $._latex_text,
+    ),
+
+    latex_prime: $ => token(prec(2, /'+/)),
+
+    latex_command: $ => token(prec(2, seq(
+      '\\',
+      choice(
+        /[a-zA-Z]+/,
+        /[^a-zA-Z \t\r\n]/,
+      ),
+    ))),
+
+    latex_group: $ => seq(
+      '{',
+      repeat($._latex_item),
+      '}',
+    ),
+
+    latex_superscript: $ => token('^'),
+    latex_subscript: $ => token('_'),
+
+    _latex_punct: $ => choice(
+      '(', ')', '[', ']', ',', '.', ';', ':',
+    ),
+
+    _latex_text: $ => token(prec(-1, choice(
+      /[^$\\^_{}()\[\],.;:a-zA-Z0-9 \t\r\n]+/,
+      /[ \t\r\n]+/,
+      '}',
+    ))),
+
+    symbol_reference: $ => token(prec(3, seq(
+      choice(
+        /[a-zA-Z][a-zA-Z0-9_]*(\+|-)?\?/,
+        /[!%^&*+\-=|<>/~]+(_[a-zA-Z][a-zA-Z0-9_]*)?(\+|-)?\?/,
+      ),
+      optional(choice(
+        /\{(\{[^}]*\}|[^}\n\r])*\.\.\.(\{[^}]*\}|[^}\n\r])*\}/,
+      )),
+    ))),
+
+    _string_text: $ => token(prec(-1, choice(
+      /[^"$\\{\n\r \t]+/,
+      /[ \t\r\n]+/,
+      '{',
+      '\\',
+    ))),
+
+    _triple_string_text: $ => token(prec(-1, choice(
+      /[^"$\\{\n\r \t]+/,
+      /[ \t\r\n]+/,
+      '"',
+      '""',
+      '{',
+      '\\',
+    ))),
 
     // `*+`  backtick-quoted operator name (used where an identifier is expected)
     backtick_op: $ => token(prec(3, /`[^`\n]+`/)),
@@ -64,8 +227,14 @@ module.exports = grammar({
         $.command_label,
         $.command_brace_args,
         $.command_paren_args,
+        $.command_cast,
       )),
       optional($.command_close),
+    )),
+
+    command_cast: $ => prec(2, seq(
+      token.immediate('@'),
+      $.command_brace_args,
     )),
 
     // Refined command header: \(part, …)::target  e.g.
@@ -82,7 +251,10 @@ module.exports = grammar({
       repeat(seq(',', $.command_name)),
       ')',
       $.refined_separator,
-      $.command_name,
+      choice(
+        $.command_name,
+        seq('[[', choice($.command_name, $.identifier), ']]'),
+      ),
     ),
 
     // "\(" opener for a refined command header.
@@ -120,7 +292,7 @@ module.exports = grammar({
       $.command_label_name,
     ),
 
-    command_label_marker: $ => token.immediate(prec(2, choice(':?', ':'))),
+    command_label_marker: $ => token.immediate(prec(2, choice(':?', ':', '#'))),
     command_label_name: $ => token.immediate(/[a-zA-Z_$][a-zA-Z0-9_$]*/),
 
     command_brace_args: $ => prec(2, seq(
@@ -145,7 +317,10 @@ module.exports = grammar({
     magnetic_placeholder: $ => token(prec(3, /[a-zA-Z][a-zA-Z0-9_]*__/)),
 
     // x_    y_1_   placeholder
-    placeholder: $ => token(prec(2, /[a-zA-Z][a-zA-Z0-9_]*_/)),
+    placeholder: $ => token(prec(2, choice(
+      /_+/,
+      /[a-zA-Z][a-zA-Z0-9_]*_/,
+    ))),
 
     // structural assignment / mapping operators (longest first matters less
     // because tree-sitter does longest-match for token strings)
@@ -173,14 +348,14 @@ module.exports = grammar({
 
     number: $ => token(/[0-9]+(\.[0-9]+)?/),
 
-    // operator names, possibly with a subscript like *_name
-    operator: $ => token(/[!%^&*+\-=|<>/~]+(_[a-zA-Z][a-zA-Z0-9_]*)?/),
+    // operator names, possibly with a subscript like *_name or primes like *'
+    operator: $ => token(/[!%^&*+\-=|<>/~]+(_[a-zA-Z][a-zA-Z0-9_]*)?'*/),
 
-    identifier: $ => token(/[a-zA-Z][a-zA-Z0-9_]*/),
+    identifier: $ => token(/[a-zA-Z][a-zA-Z0-9_]*'*/),
 
     _punct: $ => choice(
       '(', ')', '{', '}', '[', ']',
-      ',', ':', ';', '.', '?', '|', '/', '\\',
+      ',', ':', ';', '.', '?', '|', '/', '\\', '\'',
     ),
   },
 });
