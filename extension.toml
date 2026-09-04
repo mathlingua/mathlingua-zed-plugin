@@ -8,7 +8,7 @@ repository = "https://github.com/dominickramer/mathlingua"
 
 [grammars.mathlingua]
 repository = "https://github.com/mathlingua/mathlingua-zed-plugin.git"
-commit = "f4085b4f2c33d89e3c9ea06986437aaca8d05282"
+commit = "d916b97b87b9920c7e2b2f6f76e4c620bd21f656"
 
 [language_servers.mlg]
 name = "Mathlingua"
