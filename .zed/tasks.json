@@ -1,0 +1,9 @@
+[
+  {
+    "label": "Mathlingua: Start Live Preview",
+    "command": "mlg",
+    "args": ["view", "--watch"],
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  }
+]

@@ -8,8 +8,14 @@ repository = "https://github.com/dominickramer/mathlingua"
 
 [grammars.mathlingua]
 repository = "https://github.com/mathlingua/mathlingua-zed-plugin.git"
-commit = "d916b97b87b9920c7e2b2f6f76e4c620bd21f656"
+rev = "d916b97b87b9920c7e2b2f6f76e4c620bd21f656"
 
 [language_servers.mlg]
 name = "Mathlingua"
 language = "Mathlingua"
+
+[slash_commands.preview]
+description = "Show information on Mathlingua live entry and page preview"
+tooltip_text = "Mathlingua Preview"
+requires_argument = false
+

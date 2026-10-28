@@ -1,12 +1,36 @@
 # Mathlingua for Zed
 
-Syntax highlighting, inline diagnostics, and per-line type information for
+Syntax highlighting, live entry previews, live page preview integration, inline diagnostics, and per-line type information for
 [Mathlingua](https://github.com/dominickramer/mathlingua) (`.mlg`) files.
 
-Everything comes from `mlg lsp` — a tiny LSP server built into the `mlg`
+Everything comes from `mlg lsp` — a language server built into the `mlg`
 binary. On every save, it re-runs `mlg check` for the project containing the
 saved file and publishes errors/warnings to Zed. While that check is running,
 Zed displays an indeterminate spinner labeled **mlg check**.
+
+## Live Entry Preview
+
+While adding or editing an entry in an `.mlg` buffer, place the cursor anywhere inside the entry and press <kbd>ctrl-k</kbd> <kbd>ctrl-i</kbd> (Zed's `editor::Hover`, also bound to hovering the mouse). Zed displays a rendered live preview of the entire entry:
+
+- **Mathematical formatting:** Command headings and formulations are rendered using LaTeX math notation.
+- **Structured clauses:** Sections (`when:`, `then:`, `given:`, `where:`, `satisfies:`, `Proof:`, etc.) are clearly formatted with bulleted items, labels, and indented sub-clauses.
+- **Real-time updates:** The preview updates live as you type, driven by in-memory buffer synchronization before you even save the file.
+- **Type information:** If the hovered line was type-checked by `mlg check`, its resolved expression type breakdown appears right below the entry preview.
+- **Quick links:** Includes a direct link to open the live web viewer (`http://localhost:3000`).
+
+## Live Page Preview (`mlg view`)
+
+To view your entire document or collection with interactive KaTeX rendering and automatic reload on file changes:
+
+1. **Via Zed Task:** Open the Command Palette (<kbd>cmd-shift-p</kbd> on macOS / <kbd>ctrl-shift-p</kbd> on Linux) and run **task: spawn** → **Mathlingua: Start Live Preview**.
+2. **Via Terminal:** Run `mlg view --watch` in your workspace root.
+3. **Via Browser:** Navigate to `http://localhost:3000` (or click the preview link inside any hover tooltip).
+
+Whenever you save changes in Zed, the viewer automatically reloads to reflect the updated collection.
+
+## Slash Command
+
+In the Zed Assistant panel, type `/preview` to view quick guidance and links for the in-editor entry preview and browser viewer.
 
 ## Type information
 
@@ -38,7 +62,7 @@ says so.
 
 Zed extensions cannot add panels of their own — the extension API covers
 language servers, grammars, themes, slash commands, and context servers — so
-hover is how this information is surfaced.
+hover is how in-editor rich previews and type information are surfaced.
 
 ### Limitations
 
